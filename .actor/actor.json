@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "hangban-trace-api",
+  "title": "ADS-B Trace Fetcher",
+  "description": "Fetch ADS-B trace data by ICAO24 and return normalized output.",
+  "version": "0.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "dockerfile": "../Dockerfile",
+  "input": "./input_schema.json"
+}

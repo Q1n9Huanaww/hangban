@@ -1,0 +1,48 @@
+{
+  "title": "ADS-B Trace Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "icao": {
+      "title": "ICAO24",
+      "type": "string",
+      "description": "Aircraft ICAO24 hex ID, e.g. 3c4598.",
+      "editor": "textfield"
+    },
+    "mode": {
+      "title": "Trace Mode",
+      "type": "string",
+      "description": "Fetch full or recent trace.",
+      "default": "full",
+      "enum": [
+        "full",
+        "recent"
+      ],
+      "editor": "select"
+    },
+    "includePoints": {
+      "title": "Include Full Points",
+      "type": "boolean",
+      "description": "If disabled, returns only meta + latest for faster responses.",
+      "default": false,
+      "editor": "checkbox"
+    },
+    "maxPoints": {
+      "title": "Max Points",
+      "type": "integer",
+      "description": "Optional limit for returned points (latest N points).",
+      "minimum": 1,
+      "editor": "number"
+    },
+    "warmup": {
+      "title": "Warmup Landing Page",
+      "type": "boolean",
+      "description": "Open the landing page before fetching trace.",
+      "default": true,
+      "editor": "checkbox"
+    }
+  },
+  "required": [
+    "icao"
+  ]
+}
