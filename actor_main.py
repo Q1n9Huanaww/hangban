@@ -53,7 +53,7 @@ async def main() -> None:
         do_warmup = cfg["warmup"]
 
         trace_url = build_trace_url(icao, mode=mode)
-        await Actor.log.info(f"trace_url={trace_url}")
+        Actor.log.info(f"trace_url={trace_url}")
 
         session = create_session(icao)
         if do_warmup:
@@ -84,7 +84,7 @@ async def main() -> None:
 
         await Actor.push_data(result)
         await Actor.set_value("OUTPUT", result)
-        await Actor.log.info(f"done icao={payload.get('icao')} points={len(points)}")
+        Actor.log.info(f"done icao={payload.get('icao')} points={len(points)}")
 
 
 if __name__ == "__main__":
