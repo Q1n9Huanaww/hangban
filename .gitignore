@@ -1,0 +1,41 @@
+# secrets / local env
+.env
+.env.*
+*.pem
+*.key
+*.p12
+
+# runtime artifacts
+*.log
+*.tmp
+*.bak
+__pycache__/
+*.pyc
+
+# local scrape/session data
+cj.txt
+headers_*.txt
+out_trace*.json
+trace_sample.json
+trace_func_snippet.txt
+index.html
+lib.js
+main.js
+main.pretty.js
+tarmisc.js
+tarmisc.pretty.js
+
+# binaries/build outputs
+*.exe
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+build/
+
+# IDE/editor
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
