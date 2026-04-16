@@ -1,25 +1,58 @@
-# hangban
+# ADS-B Flight Intelligence API
 
-航空数据采集与 API 交付示例项目。
+## What does this Actor do?
 
-## 当前内容
+ADS-B Flight Intelligence API fetches aircraft trace data by ICAO24 and returns structured flight intelligence, not just raw points.
 
-- `adsb_trace_fetch.py`: ADS-B trace 数据拉取与结构化输出脚本
-- `main.go`, `scraper.go`, `models.go`: Go API 服务示例
+It provides:
 
-## 快速开始
+- Single or batch ICAO queries
+- Latest flight state (speed, altitude, vertical rate, track)
+- Flight phase classification (`ground`, `climb`, `cruise`, `descent`)
+- Anomaly detection (rapid climb/descent, abrupt heading change, etc.)
+- Status change events over time
+- Window trends (`15m`, `1h`, `6h`)
+- Regional aggregate metrics (active flights, avg altitude/speed, congestion index, corridors)
 
-### Python 脚本
+## What data can you get?
 
-```bash
-python adsb_trace_fetch.py --icao 3c4598 --mode full --output out_trace.json
-```
+For each aircraft:
 
-### Apify Actor
+- ICAO, registration, type, description
+- Latest state:
+  - `lat`, `lon`
+  - `altitude_ft`
+  - `gs_kt`
+  - `track`
+  - `vertical_rate_fpm`
+  - `flight_phase`
+  - `is_anomaly`, `anomaly_type`
+  - `freshness_sec`
+  - `confidence`, `confidence_level`
+- Summary:
+  - duration, distance
+  - min/max altitude
+  - avg speed
+  - total climb/descent
+- `status_change_events`
+- `window_trends`
 
-- 已包含 `Dockerfile`、`.actor/actor.json`、`.actor/input_schema.json`、`actor_main.py`
-- 在 Apify Source 里绑定 Git 仓库后直接 `Build now` 即可
-- 运行输入示例：
+For batch runs:
+
+- `flights[]` for each ICAO
+- `region_aggregate` across all matched flights
+
+## How to use
+
+1. Open the Actor input.
+2. Provide `icao` (single) or `icaos` (batch).
+3. Select mode (`full` / `recent`).
+4. Click `Start`.
+5. Read results in Dataset / API.
+
+## Input
+
+### Single-aircraft input
 
 ```json
 {
@@ -30,18 +63,7 @@ python adsb_trace_fetch.py --icao 3c4598 --mode full --output out_trace.json
 }
 ```
 
-输出将包含增强字段：
-
-- `latest.flight_phase`: `ground` / `climb` / `cruise` / `descent`
-- `latest.is_anomaly`, `latest.anomaly_type`: 异常标记与类型列表
-- `latest.freshness_sec`: 当前点鲜活度（秒）
-- `latest.confidence`, `latest.confidence_level`: 质量评分
-- `summary`: 轨迹摘要（时长、距离、速度均值、爬升/下降累计等）
-- `status_change_events`: 状态流事件（阶段切换、异常开始/结束/更新）
-- `window_trends`: 15m/1h/6h 窗口趋势（速度/高度斜率、异常密度）
-- `region_aggregate`: 批量结果的区域聚合（活跃航班、平均高度、拥堵指数、主航向走廊）
-
-批量输入示例：
+### Batch input
 
 ```json
 {
@@ -61,14 +83,55 @@ python adsb_trace_fetch.py --icao 3c4598 --mode full --output out_trace.json
 }
 ```
 
-### Go 服务
+## Output example (shortened)
 
-```bash
-go build ./...
-go run .
+```json
+{
+  "meta": {
+    "batch_size": 2,
+    "success_count": 2,
+    "failed_count": 0,
+    "mode": "full"
+  },
+  "flights": [
+    {
+      "meta": { "icao": "3c4598", "point_count": 1800 },
+      "latest": {
+        "lat": 34.88,
+        "lon": 140.59,
+        "altitude_ft": 31000,
+        "gs_kt": 581.4,
+        "vertical_rate_fpm": 0,
+        "flight_phase": "cruise",
+        "is_anomaly": false,
+        "anomaly_type": [],
+        "confidence": 0.9,
+        "confidence_level": "high",
+        "freshness_sec": 120.4
+      },
+      "summary": {},
+      "status_change_events": [],
+      "window_trends": {}
+    }
+  ],
+  "region_aggregate": {
+    "active_flights": 2,
+    "avg_altitude_ft": 30500.0,
+    "avg_groundspeed_kt": 560.2,
+    "congestion_index": 0.12,
+    "dominant_corridors": { "NE": 1, "E": 1 }
+  }
+}
 ```
 
-## 注意
+## Access and integration
 
-- 仓库已通过 `.gitignore` 屏蔽会话文件、日志、抓取结果和本地临时文件。
-- 提交前请确认未包含任何密钥、Cookie、账号信息。
+- Export via Dataset API
+- Use with Python / Node.js SDK
+- Trigger via webhooks
+- Schedule via Tasks for periodic monitoring
+
+## Notes
+
+- Data freshness depends on upstream availability.
+- This Actor is designed for operational analytics and monitoring workflows.
