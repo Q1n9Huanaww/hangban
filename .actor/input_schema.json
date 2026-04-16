@@ -9,6 +9,16 @@
       "description": "Aircraft ICAO24 hex ID, e.g. 3c4598.",
       "editor": "textfield"
     },
+    "icaos": {
+      "title": "ICAO24 List",
+      "type": "array",
+      "description": "Batch mode: multiple ICAO24 values for parallel fetch.",
+      "editor": "stringList",
+      "prefill": [
+        "3c4598",
+        "a1d8bf"
+      ]
+    },
     "mode": {
       "title": "Trace Mode",
       "type": "string",
@@ -34,6 +44,32 @@
       "minimum": 1,
       "editor": "number"
     },
+    "windows": {
+      "title": "Trend Windows",
+      "type": "array",
+      "description": "Window trends for 15m/1h/6h.",
+      "editor": "stringList",
+      "prefill": [
+        "15m",
+        "1h",
+        "6h"
+      ]
+    },
+    "concurrency": {
+      "title": "Batch Concurrency",
+      "type": "integer",
+      "description": "Maximum parallel fetch jobs (1-20).",
+      "default": 5,
+      "minimum": 1,
+      "maximum": 20,
+      "editor": "number"
+    },
+    "region": {
+      "title": "Region Filter",
+      "type": "object",
+      "description": "Optional bounding box for regional aggregation.",
+      "editor": "json"
+    },
     "warmup": {
       "title": "Warmup Landing Page",
       "type": "boolean",
@@ -41,8 +77,5 @@
       "default": true,
       "editor": "checkbox"
     }
-  },
-  "required": [
-    "icao"
-  ]
+  }
 }
